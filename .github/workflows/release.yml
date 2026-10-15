@@ -1,12 +1,18 @@
 name: Release
 
-# Push a version tag to publish:  npm version 0.3.0 && git push --follow-tags
+# To release, either:
+#   - GitHub → Releases → "Draft a new release" → create a new tag such as v0.3.1 → Publish, or
+#   - push a tag:  git tag v0.3.1 && git push origin v0.3.1
+# The tag sets the version, so package.json does not need to be bumped first.
 on:
   push:
     tags: ["v*"]
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
 
 jobs:
   release:
@@ -18,15 +24,17 @@ jobs:
           node-version: lts/*
           cache: npm
 
-      - name: Check tag matches package.json
+      - run: npm ci
+
+      - name: Set version from tag
         run: |
-          version="$(node -p "require('./package.json').version")"
-          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${version}"
+          version="${GITHUB_REF_NAME#v}"
+          if ! [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} is not a version tag like v1.2.3 or v1.2.3-beta.1"
             exit 1
           fi
+          npm version "${version}" --no-git-tag-version --allow-same-version
 
-      - run: npm ci
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
@@ -38,10 +46,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          prerelease=""
-          case "${GITHUB_REF_NAME}" in *-*) prerelease="--prerelease" ;; esac
-          gh release create "${GITHUB_REF_NAME}" dist/ceiling-fan-card.js LICENSE \
-            --title "${GITHUB_REF_NAME}" --generate-notes --verify-tag ${prerelease}
+          assets=(dist/ceiling-fan-card.js LICENSE)
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            # Release was published from the GitHub UI; attach the build to it.
+            gh release upload "${GITHUB_REF_NAME}" "${assets[@]}" --clobber
+          else
+            prerelease=""
+            case "${GITHUB_REF_NAME}" in *-*) prerelease="--prerelease" ;; esac
+            gh release create "${GITHUB_REF_NAME}" "${assets[@]}" \
+              --title "${GITHUB_REF_NAME}" --generate-notes --verify-tag ${prerelease}
+          fi
 
   validate:
     needs: release

@@ -97,17 +97,16 @@ npm run dev        # build + serve; open http://localhost:5055/dev/
 
 ## Releasing
 
-Releases are built by GitHub Actions; `dist/` is not committed.
+Releases are built by GitHub Actions; `dist/` is not committed. The tag sets the version, so there's nothing to bump in `package.json` first.
 
-1. Commit everything on `master`.
-2. Bump the version, tag, and push:
-   ```bash
-   npm version 0.3.0          # or: npm version patch | minor | major
-   git push --follow-tags
-   ```
-3. The [Release workflow](.github/workflows/release.yml) checks the tag matches `package.json`, runs the tests, builds, and publishes a GitHub release with `ceiling-fan-card.js` and `LICENSE` attached. The JS file starts with an MIT license banner and keeps the license notices of bundled dependencies (Lit, BSD-3-Clause). Tags with a suffix (e.g. `v0.4.0-beta.1`) are marked as pre-releases, which HACS only offers to users who opt in.
+1. Push your changes to `master`.
+2. On GitHub, open **Releases → Draft a new release**, create a new tag such as `v0.3.1` on `master`, and click **Publish release**.
+   (Or from a terminal: `git tag v0.3.1 && git push origin v0.3.1`.)
+3. The [Release workflow](.github/workflows/release.yml) runs the tests, builds with the tag's version, and attaches `ceiling-fan-card.js` and `LICENSE` to the release, creating the release first if you only pushed a tag. HACS then offers the update to users within a few hours.
 
-The card's version (shown in the browser console) comes from `package.json`, so `npm version` is the only place to change it.
+Tags must look like `v1.2.3`. A suffix such as `v0.4.0-beta.1` marks a pre-release when the workflow creates it; if you publish from the GitHub page, tick **Set as a pre-release** yourself. HACS only offers pre-releases to users who opt in.
+
+The JS file starts with an MIT license banner and keeps the license notices of bundled dependencies (Lit, BSD-3-Clause).
 
 ## License
 
