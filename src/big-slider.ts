@@ -169,6 +169,8 @@ export class BigSlider extends LitElement {
           ? html`<div class="ticks">
               ${Array.from({ length: this._stepCount + 1 }, (_, i) => {
                 const f = i / this._stepCount;
+                // Ticks paint above the fill, so skip the one under the handle.
+                if (Math.abs(f - fraction) < 0.25 / this._stepCount) return nothing;
                 return html`<span
                   class="tick ${f <= fraction ? "covered" : ""}"
                   style="--pos: ${f}"
