@@ -15,11 +15,9 @@ A Home Assistant Lovelace card for ceiling fans: power, a large touch-friendly s
 - **Compact layout** that matches the Entities card's row size.
 - **Visual editor** in the dashboard UI.
 
-<!-- Screenshots: add docs/images/full.png and docs/images/compact.png, then uncomment.
-| Standard | Compact |
+| Standard | Compact (`compact: true`) |
 | --- | --- |
-| ![Standard layout](docs/images/full.png) | ![Compact layout](docs/images/compact.png) |
--->
+| ![Standard layout: fan with speed slider and direction control, plus a light](https://raw.githubusercontent.com/Locale-Systems/ceiling-fan-card/master/docs/images/fan-card-dark.png) | ![Compact layout: the same fan and light in Entities-card sized rows](https://raw.githubusercontent.com/Locale-Systems/ceiling-fan-card/master/docs/images/fan-card-compact-dark.png) |
 
 ## Installation
 
