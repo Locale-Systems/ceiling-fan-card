@@ -21,6 +21,7 @@ export const toFormData = (config: CeilingFanCardConfig): FormData => {
     show_direction: true,
     show_oscillation: true,
     slider_turns_on: true,
+    compact: false,
     ...rest,
   };
   for (let i = 0; i < MAX_LIGHTS; i++) {
@@ -57,5 +58,6 @@ export const fromFormData = (data: FormData): CeilingFanCardConfig => {
   if (config.show_direction === true) delete config.show_direction;
   if (config.show_oscillation === true) delete config.show_oscillation;
   if (config.slider_turns_on === true) delete config.slider_turns_on;
+  if (config.compact === false) delete config.compact;
   return config as unknown as CeilingFanCardConfig;
 };

@@ -1,2 +1,4 @@
 node_modules/
 .DS_Store
+# Built in CI and attached to each GitHub release
+dist/

@@ -54,6 +54,7 @@
     <div class="toolbar">
       <strong>Ceiling Fan Card</strong>
       <button id="theme">Toggle dark</button>
+      <button id="compact">Toggle compact</button>
     </div>
     <div class="grid" id="grid"></div>
     <pre id="log"></pre>
@@ -127,7 +128,8 @@
         const wrap = document.createElement("div");
         wrap.innerHTML = `<h3>${title}</h3>`;
         const card = document.createElement("ceiling-fan-card");
-        card.setConfig({ type: "custom:ceiling-fan-card", ...config });
+        card._baseConfig = { type: "custom:ceiling-fan-card", ...config };
+        card.setConfig(card._baseConfig);
         wrap.append(card);
         grid.append(wrap);
         return card;
@@ -136,6 +138,14 @@
       const setHass = (hass) => cards.forEach((c) => (c.hass = hass));
       setHass(createMockHass(initialStates, setHass, log));
       window.__cards = cards;
+
+      let compact = new URLSearchParams(location.search).has("compact");
+      const applyCompact = () => cards.forEach((c) => c.setConfig({ ...c._baseConfig, compact }));
+      if (compact) applyCompact();
+      document.getElementById("compact").addEventListener("click", () => {
+        compact = !compact;
+        applyCompact();
+      });
 
       document.getElementById("theme").addEventListener("click", () => {
         const root = document.documentElement;

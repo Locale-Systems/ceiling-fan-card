@@ -1,4 +1,7 @@
-export const CARD_VERSION = "0.2.0";
+import { version } from "../package.json";
+
+/** Single source of truth is package.json; bump with `npm version`. */
+export const CARD_VERSION = version;
 export const CARD_TYPE = "ceiling-fan-card";
 export const EDITOR_TYPE = "ceiling-fan-card-editor";
 
@@ -13,6 +16,9 @@ export const FanEntityFeature = {
 } as const;
 
 export const MAX_LIGHTS = 2;
+
+/** In compact mode, fans with up to this many speeds get segmented buttons; more get a slim slider. */
+export const COMPACT_MAX_SPEED_BUTTONS = 6;
 
 /** How long local slider values override incoming state after release. */
 export const OPTIMISTIC_HOLD_MS = 1500;

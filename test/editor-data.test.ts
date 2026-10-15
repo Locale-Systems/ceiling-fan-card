@@ -18,6 +18,13 @@ describe("editor config mapping", () => {
     expect(fromFormData(toFormData(config))).toEqual(config);
   });
 
+  it("keeps compact only when enabled", () => {
+    const base = { type: "t", fan: "fan.a" };
+    expect(toFormData(base).compact).toBe(false);
+    expect(fromFormData(toFormData({ ...base, compact: true }))).toEqual({ ...base, compact: true });
+    expect(fromFormData(toFormData(base))).toEqual(base);
+  });
+
   it("splits lights into form groups with string dimmable values", () => {
     const data = toFormData({ type: "t", fan: "fan.a", lights: [{ entity: "light.a" }] });
     expect(data.light1).toEqual({ entity: "light.a", dimmable: "auto" });
@@ -34,6 +41,7 @@ describe("editor config mapping", () => {
       show_direction: true,
       show_oscillation: true,
       slider_turns_on: true,
+      compact: false,
       light1: { dimmable: "auto" },
       light2: { entity: "light.b", name: "", dimmable: "auto" },
     });

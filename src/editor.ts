@@ -51,6 +51,7 @@ const SCHEMA = [
     type: "grid",
     name: "",
     schema: [
+      { name: "compact", selector: { boolean: {} } },
       { name: "show_direction", selector: { boolean: {} } },
       { name: "show_oscillation", selector: { boolean: {} } },
       { name: "slider_turns_on", selector: { boolean: {} } },
@@ -64,6 +65,7 @@ const LABELS: Record<string, string> = {
   entity: "Light entity",
   name: "Name (optional)",
   icon: "Icon (optional)",
+  compact: "Compact layout",
   show_direction: "Show direction control",
   show_oscillation: "Show oscillation control",
   slider_turns_on: "Speed slider turns fan on",
@@ -71,6 +73,7 @@ const LABELS: Record<string, string> = {
 };
 
 const HELPERS: Record<string, string> = {
+  compact: "Entities-card sized rows with speed buttons and slim sliders",
   show_oscillation: "Only shown if the fan supports oscillation",
   slider_turns_on: "When off, moving the slider powers the fan on at that speed",
 };

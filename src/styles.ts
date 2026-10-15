@@ -208,6 +208,172 @@ export const cardStyles = css`
     outline: 3px solid color-mix(in srgb, var(--primary-color) 50%, transparent);
     outline-offset: 2px;
   }
+  /* ---- Compact layout: Entities-card-sized rows ------------------------ */
+  ha-card.compact {
+    padding: 8px 16px;
+    gap: 0;
+    --_switch-color: var(--switch-checked-color, var(--primary-color, #03a9f4));
+  }
+  .compact .section {
+    gap: 0;
+  }
+  .compact .section + .section {
+    border-top: none;
+    padding-top: 0;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+  }
+  .compact .icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+    background: none;
+    --mdc-icon-size: 24px;
+  }
+  .compact .name,
+  .compact .fan .name {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  .compact .state {
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .compact .info {
+    flex: 1.2 1 0;
+  }
+  .compact .light cfc-big-slider {
+    flex: 1 1 0;
+    min-width: 72px;
+    max-width: 240px;
+  }
+  /* Second row (speed buttons / slider) lines up with the name. */
+  .speeds,
+  .compact .speed-slider {
+    margin: 0 0 6px 56px;
+  }
+  .speeds {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 10px;
+    background: var(--secondary-background-color, rgba(127, 127, 127, 0.15));
+  }
+  .speeds button {
+    flex: 1;
+    min-height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--secondary-text-color);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 180ms, color 180ms;
+  }
+  .speeds button.active {
+    background: var(--cfc-fan-on-color);
+    color: var(--text-primary-color, #fff);
+  }
+  .speeds button[disabled] {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .speeds button:focus-visible,
+  .icon-button:focus-visible,
+  .switch:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary-color) 60%, transparent);
+    outline-offset: 1px;
+  }
+  .icon-button {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    background: transparent;
+    color: var(--secondary-text-color);
+    cursor: pointer;
+    --mdc-icon-size: 22px;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 180ms, color 180ms;
+  }
+  @media (hover: hover) {
+    .icon-button:hover {
+      background: var(--secondary-background-color, rgba(127, 127, 127, 0.15));
+    }
+  }
+  .icon-button.active {
+    color: var(--cfc-fan-on-color);
+    background: color-mix(in srgb, var(--cfc-fan-on-color) 15%, transparent);
+  }
+  .icon-button[disabled] {
+    opacity: 0.4;
+    cursor: default;
+    background: transparent;
+  }
+  /* Toggle styled after HA's ha-switch, honouring the same theme variables. */
+  .switch {
+    position: relative;
+    flex: none;
+    width: 48px;
+    height: 40px;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .switch::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    top: 13px;
+    height: 14px;
+    border-radius: 7px;
+    background: var(--switch-unchecked-track-color, #9e9e9e);
+    opacity: 0.4;
+    transition: background-color 150ms, opacity 150ms;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--switch-unchecked-button-color, #fafafa);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    transition: transform 150ms ease-out, background-color 150ms;
+  }
+  .switch.on::before {
+    background: var(--switch-checked-track-color, var(--_switch-color));
+    opacity: 0.5;
+  }
+  .switch.on::after {
+    transform: translateX(20px);
+    background: var(--_switch-color);
+  }
+  .switch[disabled] {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .compact .warning {
+    margin: 4px 0;
+    padding: 8px 12px;
+  }
   .warning {
     display: flex;
     align-items: center;

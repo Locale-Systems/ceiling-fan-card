@@ -1,5 +1,9 @@
 # Ceiling Fan Card
 
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
+[![GitHub release](https://img.shields.io/github/v/release/Locale-Systems/ceiling-fan-card)](https://github.com/Locale-Systems/ceiling-fan-card/releases)
+[![CI](https://github.com/Locale-Systems/ceiling-fan-card/actions/workflows/ci.yml/badge.svg)](https://github.com/Locale-Systems/ceiling-fan-card/actions/workflows/ci.yml)
+
 A Home Assistant Lovelace card for ceiling fans: power, a large touch-friendly speed slider, direction, and up to two lights with optional dimming. Fan and lights are separate entities.
 
 - **Power is separate from speed.** The slider only covers real speeds (no "0 = off" position).
@@ -8,16 +12,30 @@ A Home Assistant Lovelace card for ceiling fans: power, a large touch-friendly s
 - **Direction toggle** (Forward / Reverse) when the fan supports it.
 - **Oscillation toggle** when the fan supports it.
 - **Up to two lights**, each with on/off and an optional brightness slider (auto-detected from `supported_color_modes`).
+- **Compact layout** that matches the Entities card's row size.
 - **Visual editor** in the dashboard UI.
+
+<!-- Screenshots: add docs/images/full.png and docs/images/compact.png, then uncomment.
+| Standard | Compact |
+| --- | --- |
+| ![Standard layout](docs/images/full.png) | ![Compact layout](docs/images/compact.png) |
+-->
 
 ## Installation
 
-### HACS (custom repository)
-1. HACS → ⋮ → *Custom repositories* → add this repo URL, category **Dashboard**.
-2. Install **Ceiling Fan Card**, then reload the browser.
+### HACS (recommended)
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Locale-Systems&repository=ceiling-fan-card&category=plugin)
+
+Or add it by hand:
+1. In HACS, open ⋮ → *Custom repositories*.
+2. Add `https://github.com/Locale-Systems/ceiling-fan-card` with type **Dashboard**.
+3. Search for **Ceiling Fan Card**, download it, and reload your browser.
+
+HACS registers the dashboard resource for you and notifies you of new releases.
 
 ### Manual
-1. Copy `dist/ceiling-fan-card.js` to `/config/www/ceiling-fan-card.js`.
+1. Download `ceiling-fan-card.js` from the [latest release](https://github.com/Locale-Systems/ceiling-fan-card/releases/latest) and copy it to `/config/www/ceiling-fan-card.js`.
 2. *Settings → Dashboards → ⋮ → Resources → Add resource*: URL `/local/ceiling-fan-card.js`, type **JavaScript module**.
 3. Reload the browser.
 
@@ -31,6 +49,7 @@ icon: mdi:ceiling-fan        # optional
 show_direction: true         # optional, default true
 show_oscillation: true       # optional, default true
 slider_turns_on: true        # optional, default true
+compact: false               # optional, default false
 lights:                      # optional, up to 2
   - entity: light.living_room_fan_down
     name: Downlight          # optional
@@ -46,13 +65,23 @@ lights:                      # optional, up to 2
 | `icon` | `mdi:ceiling-fan` | Fan icon. It spins while the fan is on, faster at higher speeds. |
 | `show_direction` | `true` | Show the Forward/Reverse control. It only appears if the fan supports direction. |
 | `show_oscillation` | `true` | Show the Oscillate toggle. It only appears if the fan supports oscillation (`supported_features` includes `OSCILLATE`); tapping it calls `fan.oscillate` with the opposite of the fan's `oscillating` attribute. Disabled while the fan is off, since many RF fans ignore oscillate commands then. |
-| `slider_turns_on` | `true` | When the fan is off, moving the slider turns it on at that speed. If `false`, the slider is disabled while the fan is off. |
+| `slider_turns_on` | `true` | When the fan is off, moving the slider (or tapping a speed button) turns it on at that speed. If `false`, speed controls are disabled while the fan is off. |
+| `compact` | `false` | Use Entities-card sized rows instead of large touch controls. See [Compact layout](#compact-layout). |
 | `lights[].entity` | **required** | A `light.*` entity. |
 | `lights[].dimmable` | `auto` | `auto` uses the light's `supported_color_modes`; `true` or `false` forces the brightness slider on or off. |
 
+### Compact layout
+
+`compact: true` trades the large touch controls for 40px rows that sit comfortably next to an Entities card (about a third of the height):
+
+- Power becomes a toggle switch styled like HA's own, using the `--switch-*` theme variables.
+- Fan speed becomes segmented buttons (1, 2, 3…) for fans with up to 6 speeds, and a slim slider for fans with more speeds or continuous percentage.
+- Direction and oscillation become icon buttons in the fan row. The direction button shows the current direction; tap it to switch.
+- Dimmable lights get a slim brightness slider inline with the name. Vertical swipes that start on a slim slider scroll the page instead of changing the value.
+
 ### Theming
 The card uses standard HA theme variables. You can override these (e.g. with card-mod):
-`--cfc-fan-on-color`, `--cfc-light-on-color`, `--cfc-slider-height` (72px), `--cfc-button-size` (56px).
+`--cfc-fan-on-color`, `--cfc-light-on-color`, `--cfc-slider-height` (72px), `--cfc-button-size` (56px), `--cfc-compact-slider-thumb-width` (18px).
 
 ## Development
 
@@ -65,3 +94,21 @@ npm run dev        # build + serve; open http://localhost:5055/dev/
 ```
 
 `dev/index.html` renders several cards against an in-memory mock of `hass`. The mock adds a 400 ms "device" latency, and service calls are logged at the bottom of the page.
+
+## Releasing
+
+Releases are built by GitHub Actions; `dist/` is not committed.
+
+1. Commit everything on `master`.
+2. Bump the version, tag, and push:
+   ```bash
+   npm version 0.3.0          # or: npm version patch | minor | major
+   git push --follow-tags
+   ```
+3. The [Release workflow](.github/workflows/release.yml) checks the tag matches `package.json`, runs the tests, builds, and publishes a GitHub release with `ceiling-fan-card.js` and `LICENSE` attached. The JS file starts with an MIT license banner and keeps the license notices of bundled dependencies (Lit, BSD-3-Clause). Tags with a suffix (e.g. `v0.4.0-beta.1`) are marked as pre-releases, which HACS only offers to users who opt in.
+
+The card's version (shown in the browser console) comes from `package.json`, so `npm version` is the only place to change it.
+
+## License
+
+[MIT](LICENSE)

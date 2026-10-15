@@ -1,7 +1,14 @@
 {
   "name": "ceiling-fan-card",
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "private": true,
   "description": "Home Assistant Lovelace card for ceiling fans with up to two lights",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Locale-Systems/ceiling-fan-card.git"
+  },
+  "homepage": "https://github.com/Locale-Systems/ceiling-fan-card",
+  "bugs": "https://github.com/Locale-Systems/ceiling-fan-card/issues",
   "type": "module",
   "main": "dist/ceiling-fan-card.js",
   "scripts": {
@@ -16,6 +23,7 @@
     "lit": "^3.2.0"
   },
   "devDependencies": {
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.0",

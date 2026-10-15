@@ -34,6 +34,7 @@ export interface CeilingFanCardConfig {
   show_direction?: boolean;
   show_oscillation?: boolean;
   slider_turns_on?: boolean;
+  compact?: boolean;
   lights?: LightConfig[];
 }
 

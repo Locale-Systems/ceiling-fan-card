@@ -6,8 +6,13 @@ import { clamp, fireEvent } from "./helpers";
  * Large, finger-friendly horizontal slider.
  *
  * Events (detail: { value: number }):
- *  - value-changing: fired continuously while dragging
- *  - value-changed:  fired once when the user releases (or on keyboard input)
+ *  - value-changing:  fired continuously while dragging
+ *  - value-changed:   fired once when the user releases (or on keyboard input)
+ *  - value-cancelled: the gesture was taken over by the browser (e.g. a scroll);
+ *                     the value reverts and no change should be sent
+ *
+ * `compact` renders a slim track with a round thumb and lets vertical
+ * scrolling pass through, for use inside dense rows.
  */
 @customElement("cfc-big-slider")
 export class BigSlider extends LitElement {
@@ -19,6 +24,7 @@ export class BigSlider extends LitElement {
   /** Rendered with a muted fill, e.g. when the entity is off. Still interactive. */
   @property({ type: Boolean, reflect: true }) inactive = false;
   @property({ type: Boolean }) ticks = false;
+  @property({ type: Boolean, reflect: true }) compact = false;
   @property() label = "";
   @property({ attribute: "value-text" }) valueText = "";
 
@@ -55,8 +61,8 @@ export class BigSlider extends LitElement {
   }
 
   private _thumbWidth(): number {
-    const raw = getComputedStyle(this).getPropertyValue("--cfc-slider-thumb-width");
-    return parseFloat(raw) || 56;
+    const raw = getComputedStyle(this).getPropertyValue("--_thumb");
+    return parseFloat(raw) || (this.compact ? 18 : 56);
   }
 
   private _onPointerDown(ev: PointerEvent): void {
@@ -82,6 +88,12 @@ export class BigSlider extends LitElement {
     }
     this.value = value;
     fireEvent(this, "value-changed", { value });
+  }
+
+  private _onPointerCancel(): void {
+    if (this._dragValue === undefined) return;
+    this._dragValue = undefined;
+    fireEvent(this, "value-cancelled");
   }
 
   private _setDrag(value: number): void {
@@ -132,7 +144,7 @@ export class BigSlider extends LitElement {
 
   protected render() {
     const fraction = this._fraction(this._current);
-    const showTicks = this.ticks && this._stepCount > 0 && this._stepCount <= 10;
+    const showTicks = this.ticks && !this.compact && this._stepCount > 0 && this._stepCount <= 10;
     return html`
       <div
         class="slider ${this._dragValue !== undefined ? "dragging" : ""}"
@@ -148,7 +160,7 @@ export class BigSlider extends LitElement {
         @pointerdown=${this._onPointerDown}
         @pointermove=${this._onPointerMove}
         @pointerup=${this._onPointerUp}
-        @pointercancel=${this._onPointerUp}
+        @pointercancel=${this._onPointerCancel}
         @lostpointercapture=${this._onPointerUp}
         @keydown=${this._onKeyDown}
       >
@@ -171,9 +183,9 @@ export class BigSlider extends LitElement {
 
   static styles = css`
     :host {
-      --cfc-slider-height: 72px;
-      --cfc-slider-thumb-width: 56px;
-      --cfc-slider-radius: 18px;
+      --_height: var(--cfc-slider-height, 72px);
+      --_thumb: var(--cfc-slider-thumb-width, 56px);
+      --_radius: var(--cfc-slider-radius, 18px);
       --_color: var(--cfc-slider-color, var(--primary-color, #03a9f4));
       display: block;
       -webkit-tap-highlight-color: transparent;
@@ -187,8 +199,8 @@ export class BigSlider extends LitElement {
     }
     .slider {
       position: relative;
-      height: var(--cfc-slider-height);
-      border-radius: var(--cfc-slider-radius);
+      height: var(--_height);
+      border-radius: var(--_radius);
       overflow: hidden;
       cursor: pointer;
       touch-action: none;
@@ -212,11 +224,11 @@ export class BigSlider extends LitElement {
       bottom: 0;
       left: 0;
       width: calc(
-        var(--cfc-slider-thumb-width) +
-          (100% - var(--cfc-slider-thumb-width)) * var(--fraction)
+        var(--_thumb) +
+          (100% - var(--_thumb)) * var(--fraction)
       );
       background: var(--_color);
-      border-radius: var(--cfc-slider-radius);
+      border-radius: var(--_radius);
       transition: width 180ms ease-out, background-color 180ms;
     }
     .dragging .fill {
@@ -225,7 +237,7 @@ export class BigSlider extends LitElement {
     .handle {
       position: absolute;
       top: 50%;
-      right: calc(var(--cfc-slider-thumb-width) / 2 - 3px);
+      right: calc(var(--_thumb) / 2 - 3px);
       width: 6px;
       height: 44%;
       transform: translateY(-50%);
@@ -235,7 +247,7 @@ export class BigSlider extends LitElement {
     }
     .ticks {
       position: absolute;
-      inset: 0 calc(var(--cfc-slider-thumb-width) / 2);
+      inset: 0 calc(var(--_thumb) / 2);
       pointer-events: none;
       z-index: 1;
     }
@@ -249,6 +261,43 @@ export class BigSlider extends LitElement {
       border-radius: 50%;
       background: var(--_color);
       opacity: 0.7;
+    }
+    :host([compact]) {
+      --_height: 32px;
+      --_thumb: var(--cfc-compact-slider-thumb-width, 18px);
+    }
+    :host([compact]) .slider {
+      overflow: visible;
+      border-radius: 0;
+      /* Let vertical swipes scroll the dashboard; horizontal drags still work. */
+      touch-action: pan-y;
+    }
+    :host([compact]) .slider:focus-visible {
+      box-shadow: none;
+    }
+    :host([compact]) .track,
+    :host([compact]) .fill {
+      top: calc(50% - 3px);
+      bottom: auto;
+      height: 6px;
+      border-radius: 3px;
+    }
+    :host([compact]) .track {
+      opacity: 0.25;
+    }
+    :host([compact]) .fill {
+      width: calc(var(--_thumb) / 2 + (100% - var(--_thumb)) * var(--fraction));
+    }
+    :host([compact]) .handle {
+      right: calc(var(--_thumb) / -2);
+      width: var(--_thumb);
+      height: var(--_thumb);
+      border-radius: 50%;
+      background: var(--_color);
+      opacity: 1;
+    }
+    :host([compact]) .slider:focus-visible .handle {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--_color) 35%, transparent);
     }
     .tick.covered {
       background: var(--cfc-slider-handle-color, #fff);
