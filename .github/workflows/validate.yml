@@ -6,10 +6,16 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 
+permissions:
+  contents: read
+
+# hacs/action publishes no usable releases (HACS documents @main), so it is
+# pinned to main's commit on the date shown. Dependabot cannot bump a branch
+# pin: refresh it by hand when a HACS validation rule changes.
 jobs:
   hacs:
     runs-on: ubuntu-latest
     steps:
-      - uses: hacs/action@main
+      - uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main, 2026-10-17
         with:
           category: plugin
