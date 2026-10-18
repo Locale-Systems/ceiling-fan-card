@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest something the card should do
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you're trying to do
+      description: The problem or use case, not just the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you'd like the card to do
+      description: A sketch or screenshot of a similar card helps for layout ideas.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've tried
+  - type: input
+    id: fan
+    attributes:
+      label: Fan integration
+      description: If the request depends on what your fan supports, which integration provides it.
