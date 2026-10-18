@@ -1,0 +1,64 @@
+name: Bug report
+description: The card doesn't show or behave as it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please check the existing issues first.
+        Security problems go through **Security → Report a vulnerability**, never a public issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you do, and what went wrong? A screenshot helps for anything visual.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Card configuration
+      description: The card's YAML, from the card editor's code view.
+      render: yaml
+    validations:
+      required: true
+  - type: input
+    id: card-version
+    attributes:
+      label: Card version
+      description: Shown in HACS.
+      placeholder: "0.3.0"
+    validations:
+      required: true
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser or app
+      description: Browser and version, or the Home Assistant companion app and its platform.
+      placeholder: Safari 26 on iPhone
+    validations:
+      required: true
+  - type: input
+    id: fan
+    attributes:
+      label: Fan integration
+      description: Which integration provides the fan entity (for example ESPHome, Bond, Clicker), and its speed count if known.
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console errors
+      description: Any errors from the browser's developer console when the problem happens.
+      render: text
